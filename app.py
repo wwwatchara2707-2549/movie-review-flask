@@ -2,10 +2,11 @@ from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
 
+# เก็บรีวิวไว้ใน list ชั่วคราว (ยังไม่ใช้ database)
 movies = []
 
 @app.route("/")
-def home():
+def index():
     return render_template("index.html", movies=movies)
 
 
@@ -24,6 +25,14 @@ def add_movie():
         return redirect("/")
 
     return render_template("add.html")
+
+
+# ✅ DELETE ROUTE (แก้ Method Not Allowed แล้ว)
+@app.route("/delete/<int:index>", methods=["POST"])
+def delete_movie(index):
+    if 0 <= index < len(movies):
+        movies.pop(index)
+    return redirect("/")
 
 
 if __name__ == "__main__":
