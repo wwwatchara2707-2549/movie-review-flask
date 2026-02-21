@@ -44,12 +44,18 @@
 
     <a href="/add" class="add-button">Add Movie Review</a>
 
-    {% for movie in movies %}
-        <div class="movie-card">
-            <h3>{{ movie.name }}</h3>
-            <p>{{ movie.review }}</p>
-        </div>
-    {% endfor %}
+{% for movie in movies %}
+<div class="card">
+    <h3>{{ movie.title }}</h3>
+    <p>{{ movie.review }}</p>
+
+    <!-- Delete Button -->
+    <form action="#" method="POST">
+        <button type="submit">Delete</button>
+    </form>
+
+</div>
+{% endfor %}
 
 </body>
 </html>
