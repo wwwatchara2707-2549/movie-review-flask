@@ -16,7 +16,11 @@
         <h3>{{ movie.name }}</h3>
 
         <!-- ⭐ แสดงคะแนน -->
-        <p><strong>Rating:</strong> {{ movie.rating }} ⭐</p>
+        <p>
+            {% for i in range(movie.rating|int) %}
+                ⭐
+            {% endfor %}
+        </p>
 
         <p>{{ movie.review }}</p>
 
