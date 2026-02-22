@@ -15,11 +15,13 @@ def add_movie():
     if request.method == "POST":
         name = request.form["name"].strip()
         review = request.form["review"].strip()
+        rating = request.form["rating"]
 
-        if name and review:
+        if name and review and rating:
             movies.append({
                 "name": name,
-                "review": review
+                "review": review,
+                "rating": rating
             })
 
         return redirect("/")

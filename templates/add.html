@@ -1,9 +1,37 @@
-<form method="POST">
-    <label>Movie Name:</label><br>
-    <input type="text" name="name" required><br><br>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Movie</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 
-    <label>Review:</label><br>
-    <textarea name="review" rows="4" cols="40" required></textarea><br><br>
+<body>
 
-    <button type="submit">Submit</button>
-</form>
+    <h1>➕ Add Movie Review</h1>
+
+    <form method="POST">
+        <input type="text" name="name" placeholder="Movie Name" required>
+        <br><br>
+
+        <textarea name="review" placeholder="Write your review..." required></textarea>
+        <br><br>
+
+        <label>Rating:</label>
+        <select name="rating" required>
+            <option value="">Select Rating</option>
+            <option value="1">⭐ 1</option>
+            <option value="2">⭐⭐ 2</option>
+            <option value="3">⭐⭐⭐ 3</option>
+            <option value="4">⭐⭐⭐⭐ 4</option>
+            <option value="5">⭐⭐⭐⭐⭐ 5</option>
+        </select>
+        <br><br>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <br>
+    <a href="/">⬅ Back</a>
+
+</body>
+</html>
