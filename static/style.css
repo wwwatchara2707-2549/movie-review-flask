@@ -43,3 +43,17 @@ h1 {
 .delete-button:hover {
     background: darkred;
 }
+.edit-button {
+    display: inline-block;
+    margin-top: 10px;
+    margin-right: 10px;
+    padding: 6px 12px;
+    background: orange;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.edit-button:hover {
+    background: darkorange;
+}
