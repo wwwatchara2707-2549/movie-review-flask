@@ -9,6 +9,12 @@
 
     <h1>✏ Edit Movie Review</h1>
 
+    {% if error %}
+        <p style="color:red; font-weight:bold;">
+            {{ error }}
+        </p>
+    {% endif %}
+
     <form method="POST">
 
         <input type="text" 
