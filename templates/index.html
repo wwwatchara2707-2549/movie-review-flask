@@ -9,7 +9,7 @@
 
     <h1>🎬 Movie Reviews</h1>
 
-    <!-- 📊 STATISTICS SECTION -->
+    <!-- 📊 STATISTICS -->
     <div class="stats-box">
         <p><strong>Total Movies:</strong> {{ total_movies }}</p>
         <p><strong>Average Rating:</strong> ⭐ {{ average_rating }}</p>
@@ -23,8 +23,8 @@
         {% endif %}
     </div>
 
-    <!-- 🔍 SEARCH + SORT -->
-    <form method="GET" action="/" style="margin-bottom:20px;">
+    <!-- 🔍 SEARCH + SORT + FILTER -->
+    <form method="GET" action="/">
         <input type="text"
                name="search"
                placeholder="Search movie..."
@@ -40,6 +40,15 @@
             </option>
         </select>
 
+        <select name="min_rating">
+            <option value="">Min Rating</option>
+            <option value="1" {% if filter_rating == "1" %}selected{% endif %}>⭐ 1+</option>
+            <option value="2" {% if filter_rating == "2" %}selected{% endif %}>⭐ 2+</option>
+            <option value="3" {% if filter_rating == "3" %}selected{% endif %}>⭐ 3+</option>
+            <option value="4" {% if filter_rating == "4" %}selected{% endif %}>⭐ 4+</option>
+            <option value="5" {% if filter_rating == "5" %}selected{% endif %}>⭐ 5</option>
+        </select>
+
         <button type="submit">Apply</button>
         <a href="/">Clear</a>
     </form>
@@ -51,7 +60,6 @@
         <div class="movie-card">
             <h3>{{ movie.name }}</h3>
 
-            <!-- ⭐ แสดงดาวตามคะแนน -->
             <p>
                 {% for i in range(movie.rating|int) %}
                     ⭐

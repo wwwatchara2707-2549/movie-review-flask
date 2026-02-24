@@ -1,0 +1,18 @@
+[33m5b7d260[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m style: upgrade UI with modern card design and improved layout
+[33mc069a64[m feat: add statistics section (total, average, highest rated)
+[33m9919b2b[m feat: add search and sort by rating feature
+[33m821eba9[m feat: implement movie search functionality
+[33m3ea6d42[m feat: integrate search into index page UI
+[33mcaab635[m feat: implement edit movie route
+[33m842de95[m feat: create edit.html template
+[33mc0c6270[m feat: add edit button to movie card
+[33ma61339e[m feat: add empty state and star rating display
+[33m4882c2c[m feat: display star icons instead of rating number
+[33m0e5471a[m feat: display rating on movie card
+[33m6c4e9e6[m refactor: move CSS to static folder
+[33m7efe066[m style: improve delete button UI and fix card styling
+[33meb62aae[m fix: resolve method not allowed error for delete route
+[33m079c0ef[m feat: add delete button to movie card
+[33m498e281[m Create README.md
+[33m72f491c[m Day 1: Basic Flask movie review app with add feature and styling
+[33m31226bb[m Install Flask and create requirements file
