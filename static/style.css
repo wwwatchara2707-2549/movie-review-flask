@@ -1,59 +1,106 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background: #f4f6f9;
+    margin: 0;
     padding: 40px;
 }
 
 h1 {
-    color: #333;
-}
-
-.movie-card {
-    background: white;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+    margin-bottom: 30px;
 }
 
 .add-button {
     display: inline-block;
-    margin-bottom: 20px;
-    padding: 10px 20px;
-    background: #007bff;
+    padding: 10px 18px;
+    background-color: #4CAF50;
     color: white;
     text-decoration: none;
     border-radius: 6px;
+    margin-bottom: 20px;
 }
 
 .add-button:hover {
-    background: #0056b3;
+    background-color: #45a049;
 }
 
-.delete-button {
-    margin-top: 10px;
-    padding: 6px 12px;
-    background: red;
-    color: white;
+form {
+    margin-bottom: 20px;
+}
+
+input[type="text"],
+select,
+textarea {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 8px 14px;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
 }
 
-.delete-button:hover {
-    background: darkred;
+button:hover {
+    opacity: 0.9;
 }
+
+/* Movie Card */
+.movie-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease;
+}
+
+.movie-card:hover {
+    transform: translateY(-3px);
+}
+
+.movie-card h3 {
+    margin-top: 0;
+}
+
+/* Star Styling */
+.movie-card p:first-of-type {
+    color: #f5b301;
+    font-size: 18px;
+}
+
+/* Edit Button */
 .edit-button {
     display: inline-block;
-    margin-top: 10px;
-    margin-right: 10px;
     padding: 6px 12px;
-    background: orange;
+    background: #2196F3;
     color: white;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 6px;
+    margin-right: 8px;
 }
 
 .edit-button:hover {
-    background: darkorange;
+    background: #1e88e5;
+}
+
+/* Delete Button */
+.delete-button {
+    background: #f44336;
+    color: white;
+}
+
+.delete-button:hover {
+    background: #e53935;
+}
+
+/* Statistics Box */
+.stats-box {
+    margin-bottom: 25px;
+    padding: 15px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
