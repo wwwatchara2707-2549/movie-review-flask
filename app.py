@@ -7,16 +7,16 @@ movies = []
 
 
 # ----------------------------
-# HOME PAGE + SEARCH
+# HOME PAGE (WITH SEARCH)
 # ----------------------------
 @app.route("/")
 def index():
-    search_query = request.args.get("search", "").lower()
+    search_query = request.args.get("search", "").strip()
 
     if search_query:
         filtered_movies = [
             movie for movie in movies
-            if search_query in movie["name"].lower()
+            if search_query.lower() in movie["name"].lower()
         ]
     else:
         filtered_movies = movies
