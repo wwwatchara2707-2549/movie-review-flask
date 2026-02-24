@@ -2,29 +2,45 @@ from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
-# เก็บข้อมูลชั่วคราวใน list (ยังไม่ใช้ database)
+# เก็บข้อมูลชั่วคราวใน list
 movies = []
 
 
 # ----------------------------
-# HOME PAGE (WITH SEARCH)
+# HOME PAGE (SEARCH + SORT)
 # ----------------------------
 @app.route("/")
 def index():
     search_query = request.args.get("search", "").strip()
+    sort_option = request.args.get("sort", "")
 
+    filtered_movies = movies
+
+    # 🔍 SEARCH
     if search_query:
         filtered_movies = [
-            movie for movie in movies
+            movie for movie in filtered_movies
             if search_query.lower() in movie["name"].lower()
         ]
-    else:
-        filtered_movies = movies
+
+    # ⭐ SORT
+    if sort_option == "high":
+        filtered_movies = sorted(
+            filtered_movies,
+            key=lambda x: int(x["rating"]),
+            reverse=True
+        )
+    elif sort_option == "low":
+        filtered_movies = sorted(
+            filtered_movies,
+            key=lambda x: int(x["rating"])
+        )
 
     return render_template(
         "index.html",
         movies=filtered_movies,
-        search_query=search_query
+        search_query=search_query,
+        sort_option=sort_option
     )
 
 
@@ -39,10 +55,7 @@ def add_movie():
         rating = request.form.get("rating", "")
 
         if not name or not review or not rating:
-            return render_template(
-                "add.html",
-                error="Please fill all fields."
-            )
+            return render_template("add.html", error="Please fill all fields.")
 
         movies.append({
             "name": name,

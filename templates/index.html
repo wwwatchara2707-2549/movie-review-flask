@@ -9,13 +9,24 @@
 
     <h1>🎬 Movie Reviews</h1>
 
-    <!-- 🔍 SEARCH FORM -->
+    <!-- 🔍 SEARCH + SORT FORM -->
     <form method="GET" action="/" style="margin-bottom:20px;">
         <input type="text"
                name="search"
                placeholder="Search movie..."
                value="{{ search_query or '' }}">
-        <button type="submit">Search</button>
+
+        <select name="sort">
+            <option value="">Sort by rating</option>
+            <option value="high" {% if sort_option == "high" %}selected{% endif %}>
+                ⭐ High → Low
+            </option>
+            <option value="low" {% if sort_option == "low" %}selected{% endif %}>
+                ⭐ Low → High
+            </option>
+        </select>
+
+        <button type="submit">Apply</button>
         <a href="/">Clear</a>
     </form>
 
@@ -26,7 +37,6 @@
         <div class="movie-card">
             <h3>{{ movie.name }}</h3>
 
-            <!-- ⭐ แสดงดาวตามคะแนน -->
             <p>
                 {% for i in range(movie.rating|int) %}
                     ⭐
