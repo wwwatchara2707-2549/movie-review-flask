@@ -9,7 +9,21 @@
 
     <h1>🎬 Movie Reviews</h1>
 
-    <!-- 🔍 SEARCH + SORT FORM -->
+    <!-- 📊 STATISTICS SECTION -->
+    <div style="margin-bottom:20px; padding:15px; background:#f2f2f2; border-radius:8px;">
+        <p><strong>Total Movies:</strong> {{ total_movies }}</p>
+        <p><strong>Average Rating:</strong> ⭐ {{ average_rating }}</p>
+
+        {% if highest_rated %}
+            <p>
+                <strong>Highest Rated:</strong>
+                {{ highest_rated.name }}
+                (⭐ {{ highest_rated.rating }})
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- 🔍 SEARCH + SORT -->
     <form method="GET" action="/" style="margin-bottom:20px;">
         <input type="text"
                name="search"
@@ -37,6 +51,7 @@
         <div class="movie-card">
             <h3>{{ movie.name }}</h3>
 
+            <!-- ⭐ แสดงดาวตามคะแนน -->
             <p>
                 {% for i in range(movie.rating|int) %}
                     ⭐

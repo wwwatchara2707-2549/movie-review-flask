@@ -2,12 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
-# เก็บข้อมูลชั่วคราวใน list
 movies = []
 
 
 # ----------------------------
-# HOME PAGE (SEARCH + SORT)
+# HOME PAGE (SEARCH + SORT + STATS)
 # ----------------------------
 @app.route("/")
 def index():
@@ -36,11 +35,27 @@ def index():
             key=lambda x: int(x["rating"])
         )
 
+    # 📊 STATISTICS
+    total_movies = len(movies)
+
+    if movies:
+        average_rating = round(
+            sum(int(m["rating"]) for m in movies) / total_movies,
+            2
+        )
+        highest_rated = max(movies, key=lambda x: int(x["rating"]))
+    else:
+        average_rating = 0
+        highest_rated = None
+
     return render_template(
         "index.html",
         movies=filtered_movies,
         search_query=search_query,
-        sort_option=sort_option
+        sort_option=sort_option,
+        total_movies=total_movies,
+        average_rating=average_rating,
+        highest_rated=highest_rated
     )
 
 
@@ -110,8 +125,5 @@ def delete_movie(index):
     return redirect(url_for("index"))
 
 
-# ----------------------------
-# RUN SERVER
-# ----------------------------
 if __name__ == "__main__":
     app.run(debug=True)
