@@ -24,7 +24,7 @@
     </div>
 
     <!-- 🔍 SEARCH + SORT + FILTER -->
-    <form method="GET" action="/">
+    <form method="GET" action="{{ url_for('index') }}">
         <input type="text"
                name="search"
                placeholder="Search movie..."
@@ -42,42 +42,43 @@
 
         <select name="min_rating">
             <option value="">Min Rating</option>
-            <option value="1" {% if filter_rating == "1" %}selected{% endif %}>⭐ 1+</option>
-            <option value="2" {% if filter_rating == "2" %}selected{% endif %}>⭐ 2+</option>
-            <option value="3" {% if filter_rating == "3" %}selected{% endif %}>⭐ 3+</option>
-            <option value="4" {% if filter_rating == "4" %}selected{% endif %}>⭐ 4+</option>
-            <option value="5" {% if filter_rating == "5" %}selected{% endif %}>⭐ 5</option>
+            {% for i in range(1,6) %}
+                <option value="{{ i }}"
+                    {% if filter_rating == i|string %}selected{% endif %}>
+                    ⭐ {{ i }}+
+                </option>
+            {% endfor %}
         </select>
 
         <button type="submit">Apply</button>
-        <a href="/" class="clear-button">Clear</a>
+        <a href="{{ url_for('index') }}" class="clear-button">Clear</a>
     </form>
 
-    <a href="/add" class="add-button">Add Movie Review</a>
+    <a href="{{ url_for('add') }}" class="add-button">Add Movie Review</a>
 
     {% if movies %}
         {% for movie in movies %}
         <div class="movie-card">
-    <h3>{{ movie.name }}</h3>
+            <h3>{{ movie.name }}</h3>
 
-    <p class="date">
-        Added on: {{ movie.created_at }}
-    </p>
+            <p class="date">
+                Added on: {{ movie.created_at }}
+            </p>
 
-    <p>
-        {% for i in range(movie.rating|int) %}
-            ⭐
-        {% endfor %}
-    </p>
+            <p>
+                {% for i in range(movie.rating|int) %}
+                    ⭐
+                {% endfor %}
+            </p>
 
-    <p>{{ movie.review }}</p>
+            <p>{{ movie.review }}</p>
 
-            <a href="/edit/{{ loop.index0 }}" class="edit-button">Edit</a>
+            <a href="{{ url_for('edit', id=movie.id) }}" class="edit-button">Edit</a>
 
-            <form action="/delete/{{ movie.id }}" 
-                    method="POST"
-                    style="display:inline;"
-                    onsubmit="return confirm('Are you sure you want to delete this review?');">
+            <form action="{{ url_for('delete', id=movie.id) }}"
+                  method="POST"
+                  style="display:inline;"
+                  onsubmit="return confirm('Are you sure you want to delete this review?');">
                 <button type="submit" class="delete-button">Delete</button>
             </form>
         </div>
@@ -87,16 +88,30 @@
             🎥 No movie reviews found.
         </p>
     {% endif %}
+
+    <!-- 📄 Pagination -->
     <div class="pagination">
-    {% if page > 1 %}
-        <a href="?page={{ page - 1 }}">&laquo; Previous</a>
-    {% endif %}
+        {% if page > 1 %}
+            <a href="{{ url_for('index',
+                                page=page-1,
+                                search=search_query,
+                                sort=sort_option,
+                                min_rating=filter_rating) }}">
+                &laquo; Previous
+            </a>
+        {% endif %}
 
-    <span>Page {{ page }} of {{ total_pages }}</span>
+        <span>Page {{ page }} of {{ total_pages }}</span>
 
-    {% if page < total_pages %}
-        <a href="?page={{ page + 1 }}">Next &raquo;</a>
-    {% endif %}
+        {% if page < total_pages %}
+            <a href="{{ url_for('index',
+                                page=page+1,
+                                search=search_query,
+                                sort=sort_option,
+                                min_rating=filter_rating) }}">
+                Next &raquo;
+            </a>
+        {% endif %}
     </div>
 
 </body>
