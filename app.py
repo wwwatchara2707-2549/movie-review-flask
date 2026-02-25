@@ -42,7 +42,16 @@ def index():
     filter_rating = request.args.get("min_rating", "")
 
     conn = get_db_connection()
-    movies = conn.execute("SELECT * FROM movies").fetchall()
+
+    query = "SELECT * FROM movies"
+
+    # SORT ใน SQL
+    if sort_option == "high":
+        query += " ORDER BY rating DESC"
+    elif sort_option == "low":
+        query += " ORDER BY rating ASC"
+
+    movies = conn.execute(query).fetchall()
     conn.close()
 
     filtered_movies = movies
@@ -60,19 +69,6 @@ def index():
             movie for movie in filtered_movies
             if int(movie["rating"]) >= int(filter_rating)
         ]
-
-    # SORT
-    if sort_option == "high":
-        filtered_movies = sorted(
-            filtered_movies,
-            key=lambda x: int(x["rating"]),
-            reverse=True
-        )
-    elif sort_option == "low":
-        filtered_movies = sorted(
-            filtered_movies,
-            key=lambda x: int(x["rating"])
-        )
 
     total_movies = len(movies)
 
