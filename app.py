@@ -1,9 +1,35 @@
 from flask import Flask, render_template, request, redirect, url_for
+import sqlite3
 
 app = Flask(__name__)
 
-# เก็บข้อมูลชั่วคราวใน list (ยังไม่ใช้ database)
-movies = []
+DATABASE = "movies.db"
+
+
+# ----------------------------
+# DATABASE SETUP
+# ----------------------------
+def init_db():
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS movies (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            review TEXT NOT NULL,
+            rating INTEGER NOT NULL
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
+def get_db_connection():
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
 # ----------------------------
@@ -14,6 +40,10 @@ def index():
     search_query = request.args.get("search", "").strip()
     sort_option = request.args.get("sort", "")
     filter_rating = request.args.get("min_rating", "")
+
+    conn = get_db_connection()
+    movies = conn.execute("SELECT * FROM movies").fetchall()
+    conn.close()
 
     filtered_movies = movies
 
@@ -84,11 +114,13 @@ def add_movie():
         if not rating.isdigit() or not (1 <= int(rating) <= 5):
             return render_template("add.html", error="Rating must be between 1 and 5.")
 
-        movies.append({
-            "name": name,
-            "review": review,
-            "rating": rating
-        })
+        conn = get_db_connection()
+        conn.execute(
+            "INSERT INTO movies (name, review, rating) VALUES (?, ?, ?)",
+            (name, review, rating)
+        )
+        conn.commit()
+        conn.close()
 
         return redirect(url_for("index"))
 
@@ -98,49 +130,62 @@ def add_movie():
 # ----------------------------
 # EDIT MOVIE
 # ----------------------------
-@app.route("/edit/<int:index>", methods=["GET", "POST"])
-def edit_movie(index):
-    if 0 <= index < len(movies):
+@app.route("/edit/<int:id>", methods=["GET", "POST"])
+def edit_movie(id):
+    conn = get_db_connection()
+    movie = conn.execute(
+        "SELECT * FROM movies WHERE id = ?",
+        (id,)
+    ).fetchone()
 
-        if request.method == "POST":
-            name = request.form.get("name", "").strip()
-            review = request.form.get("review", "").strip()
-            rating = request.form.get("rating", "")
+    if movie is None:
+        conn.close()
+        return redirect(url_for("index"))
 
-            if not name or not review or not rating:
-                return render_template(
-                    "edit.html",
-                    movie=movies[index],
-                    error="Please fill all fields."
-                )
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        review = request.form.get("review", "").strip()
+        rating = request.form.get("rating", "")
 
-            if not rating.isdigit() or not (1 <= int(rating) <= 5):
-                return render_template(
-                    "edit.html",
-                    movie=movies[index],
-                    error="Rating must be between 1 and 5."
-                )
+        if not name or not review or not rating:
+            conn.close()
+            return render_template(
+                "edit.html",
+                movie=movie,
+                error="Please fill all fields."
+            )
 
-            movies[index] = {
-                "name": name,
-                "review": review,
-                "rating": rating
-            }
+        if not rating.isdigit() or not (1 <= int(rating) <= 5):
+            conn.close()
+            return render_template(
+                "edit.html",
+                movie=movie,
+                error="Rating must be between 1 and 5."
+            )
 
-            return redirect(url_for("index"))
+        conn.execute(
+            "UPDATE movies SET name = ?, review = ?, rating = ? WHERE id = ?",
+            (name, review, rating, id)
+        )
+        conn.commit()
+        conn.close()
 
-        return render_template("edit.html", movie=movies[index], error=None)
+        return redirect(url_for("index"))
 
-    return redirect(url_for("index"))
+    conn.close()
+    return render_template("edit.html", movie=movie, error=None)
 
 
 # ----------------------------
 # DELETE MOVIE
 # ----------------------------
-@app.route("/delete/<int:index>", methods=["POST"])
-def delete_movie(index):
-    if 0 <= index < len(movies):
-        movies.pop(index)
+@app.route("/delete/<int:id>", methods=["POST"])
+def delete_movie(id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM movies WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+
     return redirect(url_for("index"))
 
 
@@ -148,4 +193,5 @@ def delete_movie(index):
 # RUN SERVER
 # ----------------------------
 if __name__ == "__main__":
+    init_db()
     app.run(debug=True)
