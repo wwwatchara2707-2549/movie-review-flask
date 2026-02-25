@@ -43,33 +43,29 @@ def index():
 
     conn = get_db_connection()
 
-    query = "SELECT * FROM movies"
+    # Base query
+    query = "SELECT * FROM movies WHERE 1=1"
+    params = []
 
-    # SORT ใน SQL
+    # SEARCH (ทำใน SQL)
+    if search_query:
+        query += " AND name LIKE ?"
+        params.append(f"%{search_query}%")
+
+    # FILTER BY MIN RATING (ทำใน SQL)
+    if filter_rating and filter_rating.isdigit():
+        query += " AND rating >= ?"
+        params.append(int(filter_rating))
+
+    # SORT
     if sort_option == "high":
         query += " ORDER BY rating DESC"
     elif sort_option == "low":
         query += " ORDER BY rating ASC"
 
-    movies = conn.execute(query).fetchall()
-    conn.close()
+    movies = conn.execute(query, params).fetchall()
 
-    filtered_movies = movies
-
-    # SEARCH
-    if search_query:
-        filtered_movies = [
-            movie for movie in filtered_movies
-            if search_query.lower() in movie["name"].lower()
-        ]
-
-    # FILTER BY MIN RATING
-    if filter_rating and filter_rating.isdigit():
-        filtered_movies = [
-            movie for movie in filtered_movies
-            if int(movie["rating"]) >= int(filter_rating)
-        ]
-
+    # -------- STATISTICS --------
     total_movies = len(movies)
 
     if movies:
@@ -82,9 +78,11 @@ def index():
         average_rating = 0
         highest_rated = None
 
+    conn.close()
+
     return render_template(
         "index.html",
-        movies=filtered_movies,
+        movies=movies,
         search_query=search_query,
         sort_option=sort_option,
         filter_rating=filter_rating,
