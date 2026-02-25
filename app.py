@@ -44,8 +44,33 @@ def index():
     conn = get_db_connection()
 
     # Base query
+    # Pagination
+    page = request.args.get("page", 1, type=int)
+    per_page = 5
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+
     query = "SELECT * FROM movies WHERE 1=1"
     params = []
+
+    if search_query:
+        query += " AND name LIKE ?"
+        params.append(f"%{search_query}%")
+
+    if filter_rating and filter_rating.isdigit():
+        query += " AND rating >= ?"
+        params.append(int(filter_rating))
+
+    if sort_option == "high":
+        query += " ORDER BY rating DESC"
+    elif sort_option == "low":
+        query += " ORDER BY rating ASC"
+
+    query += " LIMIT ? OFFSET ?"
+    params.extend([per_page, offset])
+
+    movies = conn.execute(query, params).fetchall()
 
     # SEARCH
     if search_query:
@@ -80,18 +105,25 @@ def index():
         "SELECT * FROM movies ORDER BY rating DESC LIMIT 1"
     ).fetchone()
 
+    total_count = conn.execute(
+        "SELECT COUNT(*) FROM movies"
+    ).fetchone()[0]
+
+    total_pages = (total_count + per_page - 1) // per_page
     conn.close()
 
     return render_template(
-        "index.html",
-        movies=movies,
-        search_query=search_query,
-        sort_option=sort_option,
-        filter_rating=filter_rating,
-        total_movies=total_movies,
-        average_rating=average_rating,
-        highest_rated=highest_rated
-    )
+    "index.html",
+    movies=movies,
+    search_query=search_query,
+    sort_option=sort_option,
+    filter_rating=filter_rating,
+    total_movies=total_movies,
+    average_rating=average_rating,
+    highest_rated=highest_rated,   # ← ใส่ comma ตรงนี้
+    page=page,
+    total_pages=total_pages
+)
 
 # ----------------------------
 # ADD MOVIE
