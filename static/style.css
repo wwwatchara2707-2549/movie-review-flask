@@ -117,3 +117,8 @@ button:hover {
 .clear-button:hover {
     background: #757575;
 }
+.date {
+    font-size: 12px;
+    color: gray;
+    margin-bottom: 5px;
+}

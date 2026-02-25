@@ -18,12 +18,14 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             review TEXT NOT NULL,
-            rating INTEGER NOT NULL
+            rating INTEGER NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
     conn.commit()
     conn.close()
+
 
 
 def get_db_connection():
