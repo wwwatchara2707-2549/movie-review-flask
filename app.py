@@ -47,12 +47,12 @@ def index():
     query = "SELECT * FROM movies WHERE 1=1"
     params = []
 
-    # SEARCH (ทำใน SQL)
+    # SEARCH
     if search_query:
         query += " AND name LIKE ?"
         params.append(f"%{search_query}%")
 
-    # FILTER BY MIN RATING (ทำใน SQL)
+    # FILTER
     if filter_rating and filter_rating.isdigit():
         query += " AND rating >= ?"
         params.append(int(filter_rating))
@@ -65,18 +65,20 @@ def index():
 
     movies = conn.execute(query, params).fetchall()
 
-    # -------- STATISTICS --------
-    total_movies = len(movies)
+    # ---------- STATISTICS ----------
+    total_movies = conn.execute(
+        "SELECT COUNT(*) FROM movies"
+    ).fetchone()[0]
 
-    if movies:
-        average_rating = round(
-            sum(int(m["rating"]) for m in movies) / total_movies,
-            2
-        )
-        highest_rated = max(movies, key=lambda x: int(x["rating"]))
-    else:
-        average_rating = 0
-        highest_rated = None
+    avg_result = conn.execute(
+        "SELECT AVG(rating) FROM movies"
+    ).fetchone()[0]
+
+    average_rating = round(avg_result, 2) if avg_result else 0
+
+    highest_rated = conn.execute(
+        "SELECT * FROM movies ORDER BY rating DESC LIMIT 1"
+    ).fetchone()
 
     conn.close()
 
@@ -90,7 +92,6 @@ def index():
         average_rating=average_rating,
         highest_rated=highest_rated
     )
-
 
 # ----------------------------
 # ADD MOVIE
@@ -179,9 +180,7 @@ def delete_movie(id):
     conn.execute("DELETE FROM movies WHERE id = ?", (id,))
     conn.commit()
     conn.close()
-
     return redirect(url_for("index"))
-
 
 # ----------------------------
 # RUN SERVER
