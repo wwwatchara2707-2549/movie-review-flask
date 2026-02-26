@@ -32,6 +32,30 @@ def get_db_connection():
     return conn
 
 # ----------------------------
+# QUERY BUILDER
+# ----------------------------
+def build_query(search_query="", sort_option="", filter_rating=""):
+    query = "SELECT * FROM movies WHERE 1=1"
+    params = []
+
+    if search_query:
+        query += " AND name LIKE ?"
+        params.append(f"%{search_query}%")
+
+    if filter_rating and filter_rating.isdigit():
+        query += " AND rating >= ?"
+        params.append(int(filter_rating))
+
+    if sort_option == "high":
+        query += " ORDER BY rating DESC"
+    elif sort_option == "low":
+        query += " ORDER BY rating ASC"
+    else:
+        query += " ORDER BY created_at DESC"
+
+    return query, params
+
+# ----------------------------
 # HOME PAGE
 # ----------------------------
 @app.route("/")
@@ -47,28 +71,8 @@ def index():
     per_page = 5
     offset = (page - 1) * per_page
 
-    # Base query
-    query = "SELECT * FROM movies WHERE 1=1"
-    params = []
-
-    # SEARCH
-    if search_query:
-        query += " AND name LIKE ?"
-        params.append(f"%{search_query}%")
-
-    # FILTER
-    if filter_rating and filter_rating.isdigit():
-        query += " AND rating >= ?"
-        params.append(int(filter_rating))
-
-    # SORT (default newest first)
-    if sort_option == "high":
-        query += " ORDER BY rating DESC"
-    elif sort_option == "low":
-        query += " ORDER BY rating ASC"
-    else:
-        query += " ORDER BY created_at DESC"
-
+    # ใช้ฟังก์ชัน build_query
+    query, params = build_query(search_query, sort_option, filter_rating)
     query += " LIMIT ? OFFSET ?"
     params.extend([per_page, offset])
 
@@ -133,7 +137,6 @@ def add_movie():
 
     return render_template("add.html", error=None)
 
-
 # ----------------------------
 # EDIT MOVIE
 # ----------------------------
@@ -151,11 +154,10 @@ def edit_movie(id):
         review = request.form.get("review", "").strip()
         rating = request.form.get("rating", "")
 
-        if not rating.isdigit() or not (1 <= int(rating) <= 5):
-            flash("Rating must be between 1 and 5.", "error")
+        if not name or not review or not rating:
+            flash("Please fill all fields.", "error")
             conn.close()
             return redirect(url_for("edit_movie", id=id))
-
 
         if not rating.isdigit() or not (1 <= int(rating) <= 5):
             flash("Rating must be between 1 and 5.", "error")
