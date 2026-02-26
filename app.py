@@ -133,6 +133,7 @@ def add_movie():
 
     return render_template("add.html", error=None)
 
+
 # ----------------------------
 # EDIT MOVIE
 # ----------------------------
@@ -150,10 +151,11 @@ def edit_movie(id):
         review = request.form.get("review", "").strip()
         rating = request.form.get("rating", "")
 
-        if not name or not review or not rating:
-            flash("Please fill all fields.", "error")
+        if not rating.isdigit() or not (1 <= int(rating) <= 5):
+            flash("Rating must be between 1 and 5.", "error")
             conn.close()
             return redirect(url_for("edit_movie", id=id))
+
 
         if not rating.isdigit() or not (1 <= int(rating) <= 5):
             flash("Rating must be between 1 and 5.", "error")
