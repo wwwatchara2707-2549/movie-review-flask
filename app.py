@@ -1,10 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
+import sqlite3
 import os
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
 
-DATABASE = os.path.join(os.path.dirname(__file__), "movies.db")
+# ----------------------------
+# DATABASE PATH (Render-safe)
+# ----------------------------
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+DATABASE = os.path.join(BASE_DIR, "movies.db")
+
 
 # ----------------------------
 # DATABASE SETUP
@@ -12,6 +18,7 @@ DATABASE = os.path.join(os.path.dirname(__file__), "movies.db")
 def init_db():
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS movies (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,11 +29,14 @@ def init_db():
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
+
     conn.commit()
     conn.close()
 
-# 👇 เพิ่มตรงนี้เลย
+
+# 🔥 สร้างตารางทันทีตอนที่ไฟล์ถูกโหลด (สำคัญมากสำหรับ Render)
 init_db()
+
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
@@ -45,7 +55,6 @@ def index():
 
     conn = get_db_connection()
 
-    # Pagination
     page = request.args.get("page", 1, type=int)
     per_page = 5
     offset = (page - 1) * per_page
@@ -53,17 +62,14 @@ def index():
     query = "SELECT * FROM movies WHERE 1=1"
     params = []
 
-    # SEARCH
     if search_query:
         query += " AND name LIKE ?"
         params.append(f"%{search_query}%")
 
-    # FILTER
     if filter_rating and filter_rating.isdigit():
         query += " AND rating >= ?"
         params.append(int(filter_rating))
 
-    # SORT
     if sort_option == "high":
         query += " ORDER BY rating DESC"
     elif sort_option == "low":
@@ -76,9 +82,7 @@ def index():
 
     movies = conn.execute(query, params).fetchall()
 
-    # ---------- STATISTICS ----------
     total_movies = conn.execute("SELECT COUNT(*) FROM movies").fetchone()[0]
-
     avg_result = conn.execute("SELECT AVG(rating) FROM movies").fetchone()[0]
     average_rating = round(avg_result, 2) if avg_result else 0
 
@@ -157,12 +161,12 @@ def edit_movie(id):
         if not rating.isdigit() or not (1 <= int(rating) <= 5):
             flash("Rating must be between 1 and 5.", "error")
             conn.close()
-            return redirect(url_for('edit_movie', id=movie.id))
+            return redirect(url_for("edit_movie", id=id))
 
         conn.execute(
             """
             UPDATE movies
-            SET name = ?, review = ?, rating = ?, 
+            SET name = ?, review = ?, rating = ?,
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
             """,
@@ -192,8 +196,7 @@ def delete_movie(id):
 
 
 # ----------------------------
-# RUN SERVER
+# LOCAL RUN
 # ----------------------------
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
