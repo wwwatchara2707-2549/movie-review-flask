@@ -66,7 +66,7 @@
 
     <!-- DATE -->
     <p class="text-muted small">
-        Added: {{ movie.created_at[:16] }}
+        {{ movie.created_at[:16] }}
     </p>
 
     {% if movie.updated_at != movie.created_at %}
