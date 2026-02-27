@@ -194,7 +194,10 @@ def delete_movie(id):
 # ----------------------------
 # RUN SERVER
 # ----------------------------
-init_db()
+
+@app.before_request
+def create_tables_once():
+    init_db()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
