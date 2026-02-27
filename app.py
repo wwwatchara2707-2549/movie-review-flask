@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 import sqlite3
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key"  # สำหรับ flash message
+app.secret_key = "your_secret_key"
 
 DATABASE = "movies.db"
 
@@ -19,41 +19,20 @@ def init_db():
             name TEXT NOT NULL,
             review TEXT NOT NULL,
             rating INTEGER NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
     conn.commit()
     conn.close()
 
+
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
 
-# ----------------------------
-# QUERY BUILDER
-# ----------------------------
-def build_query(search_query="", sort_option="", filter_rating=""):
-    query = "SELECT * FROM movies WHERE 1=1"
-    params = []
-
-    if search_query:
-        query += " AND name LIKE ?"
-        params.append(f"%{search_query}%")
-
-    if filter_rating and filter_rating.isdigit():
-        query += " AND rating >= ?"
-        params.append(int(filter_rating))
-
-    if sort_option == "high":
-        query += " ORDER BY rating DESC"
-    elif sort_option == "low":
-        query += " ORDER BY rating ASC"
-    else:
-        query += " ORDER BY created_at DESC"
-
-    return query, params
 
 # ----------------------------
 # HOME PAGE
@@ -71,8 +50,27 @@ def index():
     per_page = 5
     offset = (page - 1) * per_page
 
-    # ใช้ฟังก์ชัน build_query
-    query, params = build_query(search_query, sort_option, filter_rating)
+    query = "SELECT * FROM movies WHERE 1=1"
+    params = []
+
+    # SEARCH
+    if search_query:
+        query += " AND name LIKE ?"
+        params.append(f"%{search_query}%")
+
+    # FILTER
+    if filter_rating and filter_rating.isdigit():
+        query += " AND rating >= ?"
+        params.append(int(filter_rating))
+
+    # SORT
+    if sort_option == "high":
+        query += " ORDER BY rating DESC"
+    elif sort_option == "low":
+        query += " ORDER BY rating ASC"
+    else:
+        query += " ORDER BY created_at DESC"
+
     query += " LIMIT ? OFFSET ?"
     params.extend([per_page, offset])
 
@@ -106,6 +104,7 @@ def index():
         total_pages=total_pages
     )
 
+
 # ----------------------------
 # ADD MOVIE
 # ----------------------------
@@ -135,7 +134,8 @@ def add_movie():
         flash("Movie added successfully!", "success")
         return redirect(url_for("index"))
 
-    return render_template("add.html", error=None)
+    return render_template("add.html")
+
 
 # ----------------------------
 # EDIT MOVIE
@@ -154,18 +154,18 @@ def edit_movie(id):
         review = request.form.get("review", "").strip()
         rating = request.form.get("rating", "")
 
-        if not name or not review or not rating:
-            flash("Please fill all fields.", "error")
-            conn.close()
-            return redirect(url_for("edit_movie", id=id))
-
         if not rating.isdigit() or not (1 <= int(rating) <= 5):
             flash("Rating must be between 1 and 5.", "error")
             conn.close()
             return redirect(url_for("edit_movie", id=id))
 
         conn.execute(
-            "UPDATE movies SET name = ?, review = ?, rating = ? WHERE id = ?",
+            """
+            UPDATE movies
+            SET name = ?, review = ?, rating = ?, 
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+            """,
             (name, review, rating, id)
         )
         conn.commit()
@@ -175,7 +175,8 @@ def edit_movie(id):
         return redirect(url_for("index"))
 
     conn.close()
-    return render_template("edit.html", movie=movie, error=None)
+    return render_template("edit.html", movie=movie)
+
 
 # ----------------------------
 # DELETE MOVIE
@@ -188,6 +189,7 @@ def delete_movie(id):
     conn.close()
     flash("Movie deleted successfully!", "info")
     return redirect(url_for("index"))
+
 
 # ----------------------------
 # RUN SERVER
