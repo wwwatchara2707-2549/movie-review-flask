@@ -2,15 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 import sqlite3
 import os
 
-app = Flask(__name__)
-app.secret_key = "your_secret_key"
-
-# ----------------------------
-# DATABASE PATH (Render-safe)
-# ----------------------------
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = os.path.join(BASE_DIR, "movies.db")
-
 
 # ----------------------------
 # DATABASE SETUP
@@ -32,9 +25,7 @@ def init_db():
 
     conn.commit()
     conn.close()
-
-
-# 🔥 สร้างตารางทันทีตอนที่ไฟล์ถูกโหลด (สำคัญมากสำหรับ Render)
+    
 init_db()
 
 
