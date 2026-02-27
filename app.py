@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-import sqlite3
+import os
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
 
-DATABASE = "movies.db"
+DATABASE = os.path.join(os.path.dirname(__file__), "movies.db")
 
 # ----------------------------
 # DATABASE SETUP
@@ -12,7 +12,6 @@ DATABASE = "movies.db"
 def init_db():
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
-
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS movies (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,10 +22,11 @@ def init_db():
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
-
     conn.commit()
     conn.close()
 
+# 👇 เพิ่มตรงนี้เลย
+init_db()
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
@@ -194,10 +194,6 @@ def delete_movie(id):
 # ----------------------------
 # RUN SERVER
 # ----------------------------
-
-@app.before_request
-def create_tables_once():
-    init_db()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
