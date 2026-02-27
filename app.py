@@ -2,6 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 import sqlite3
 import os
 
+app = Flask(__name__)
+app.secret_key = "your_secret_key"
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = os.path.join(BASE_DIR, "movies.db")
 
@@ -25,8 +28,11 @@ def init_db():
 
     conn.commit()
     conn.close()
-    
-init_db()
+
+
+@app.before_request
+def initialize_database():
+    init_db()
 
 
 def get_db_connection():
@@ -121,7 +127,7 @@ def add_movie():
         conn = get_db_connection()
         conn.execute(
             "INSERT INTO movies (name, review, rating) VALUES (?, ?, ?)",
-            (name, review, rating)
+            (name, review, int(rating))
         )
         conn.commit()
         conn.close()
@@ -161,7 +167,7 @@ def edit_movie(id):
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
             """,
-            (name, review, rating, id)
+            (name, review, int(rating), id)
         )
         conn.commit()
         conn.close()
