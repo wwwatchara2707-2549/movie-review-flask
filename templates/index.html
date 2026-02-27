@@ -7,123 +7,128 @@
 
 <body>
 
-    <h1>🎬 Movie Reviews</h1>
+<h1>🎬 Movie Reviews</h1>
 
-    <!-- 🔔 FLASH MESSAGES -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="flash-container">
-          {% for category, message in messages %}
-            <div class="flash-{{ category }}">{{ message }}</div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
+<!-- FLASH -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-container">
+    {% for category, message in messages %}
+    <div class="flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
 
-    <!-- 📊 STATISTICS -->
-    <div class="stats-box">
-        <p><strong>Total Movies:</strong> {{ total_movies }}</p>
-        <p><strong>Average Rating:</strong> ⭐ {{ average_rating }}</p>
+<!-- STATS -->
+<div class="stats-box">
+    <p><strong>Total Movies:</strong> {{ total_movies }}</p>
+    <p><strong>Average Rating:</strong> ⭐ {{ average_rating }}</p>
 
-        {% if highest_rated %}
-            <p>
-                <strong>Highest Rated:</strong>
-                {{ highest_rated.name }}
-                (⭐ {{ highest_rated.rating }})
-            </p>
-        {% endif %}
-    </div>
+    {% if highest_rated %}
+    <p>
+        <strong>Highest Rated:</strong>
+        {{ highest_rated.name }} (⭐ {{ highest_rated.rating }})
+    </p>
+    {% endif %}
+</div>
 
-    <!-- 🔍 SEARCH + SORT + FILTER -->
-    <form method="GET" action="{{ url_for('index') }}">
-        <input type="text"
-               name="search"
-               placeholder="Search movie..."
-               value="{{ search_query or '' }}">
+<!-- SEARCH -->
+<form method="GET" action="{{ url_for('index') }}">
+    <input type="text" name="search" placeholder="Search movie..." value="{{ search_query or '' }}">
 
-        <select name="sort">
-            <option value="">Sort by rating</option>
-            <option value="high" {% if sort_option == "high" %}selected{% endif %}>
-                ⭐ High → Low
-            </option>
-            <option value="low" {% if sort_option == "low" %}selected{% endif %}>
-                ⭐ Low → High
-            </option>
-        </select>
+    <select name="sort">
+        <option value="">Sort by rating</option>
+        <option value="high" {% if sort_option == "high" %}selected{% endif %}>⭐ High → Low</option>
+        <option value="low" {% if sort_option == "low" %}selected{% endif %}>⭐ Low → High</option>
+    </select>
 
-        <select name="min_rating">
-            <option value="">Min Rating</option>
-            {% for i in range(1,6) %}
-                <option value="{{ i }}"
-                    {% if filter_rating == i|string %}selected{% endif %}>
-                    ⭐ {{ i }}+
-                </option>
-            {% endfor %}
-        </select>
-
-        <button type="submit">Apply</button>
-        <a href="{{ url_for('index') }}" class="clear-button">Clear</a>
-    </form>
-
-    <a href="{{ url_for('add_movie') }}" class="add-button">Add Movie Review</a>
-
-    {% if movies %}
-        {% for movie in movies %}
-        <div class="movie-card">
-            <h3>{{ movie.name }}</h3>
-
-            <p class="date">
-                Added on: {{ movie.created_at }}
-            </p>
-
-            <p>
-                {% for i in range(movie.rating|int) %}
-                    ⭐
-                {% endfor %}
-            </p>
-
-            <p>{{ movie.review }}</p>
-
-            <a href="{{ url_for('edit', id=movie.id) }}" class="edit-button">Edit</a>
-
-            <form action="{{ url_for('delete', id=movie.id) }}"
-                  method="POST"
-                  style="display:inline;"
-                  onsubmit="return confirm('Are you sure you want to delete this review?');">
-                <button type="submit" class="delete-button">Delete</button>
-            </form>
-        </div>
+    <select name="min_rating">
+        <option value="">Min Rating</option>
+        {% for i in range(1,6) %}
+        <option value="{{ i }}" {% if filter_rating == i|string %}selected{% endif %}>
+            ⭐ {{ i }}+
+        </option>
         {% endfor %}
-    {% else %}
-        <p style="font-size:18px; color: gray; margin-top:20px;">
-            🎥 No movie reviews found.
-        </p>
+    </select>
+
+    <button type="submit">Apply</button>
+    <a href="{{ url_for('index') }}" class="clear-button">Clear</a>
+</form>
+
+<a href="{{ url_for('add_movie') }}" class="add-button">Add Movie Review</a>
+
+{% if movies %}
+{% for movie in movies %}
+<div class="movie-card">
+
+    <h3>{{ movie.name }}</h3>
+
+    <!-- DATE -->
+    <p class="text-muted small">
+        Added: {{ {{ movie.created_at[:16] }} }}
+    </p>
+
+    {% if movie.updated_at != movie.created_at %}
+    <p class="text-warning small fst-italic">
+        📝 Last updated: {{ movie.updated_at }}
+    </p>
     {% endif %}
 
-    <!-- 📄 Pagination -->
-    <div class="pagination">
-        {% if page > 1 %}
-            <a href="{{ url_for('index',
-                                page=page-1,
-                                search=search_query,
-                                sort=sort_option,
-                                min_rating=filter_rating) }}">
-                &laquo; Previous
-            </a>
-        {% endif %}
+    <!-- RATING -->
+    <p>
+        {% for i in range(movie.rating|int) %}
+        ⭐
+        {% endfor %}
+    </p>
 
-        <span>Page {{ page }} of {{ total_pages }}</span>
+    <p>{{ movie.review }}</p>
 
-        {% if page < total_pages %}
-            <a href="{{ url_for('index',
-                                page=page+1,
-                                search=search_query,
-                                sort=sort_option,
-                                min_rating=filter_rating) }}">
-                Next &raquo;
-            </a>
-        {% endif %}
-    </div>
+    <!-- EDIT BUTTON -->
+    <a href="{{ url_for('edit_movie', id=movie.id) }}">
+        Edit
+    </a>
+
+    <!-- DELETE BUTTON -->
+    <form action="{{ url_for('delete_movie', id=movie.id) }}"
+          method="POST"
+          style="display:inline;"
+          onsubmit="return confirm('Are you sure you want to delete this review?');">
+        <button type="submit" class="delete-button">Delete</button>
+    </form>
+
+</div>
+{% endfor %}
+{% else %}
+<p style="font-size:18px; color: gray; margin-top:20px;">
+    🎥 No movie reviews found.
+</p>
+{% endif %}
+
+<!-- PAGINATION -->
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="{{ url_for('index',
+                        page=page-1,
+                        search=search_query,
+                        sort=sort_option,
+                        min_rating=filter_rating) }}">
+        &laquo; Previous
+    </a>
+    {% endif %}
+
+    <span>Page {{ page }} of {{ total_pages }}</span>
+
+    {% if page < total_pages %}
+    <a href="{{ url_for('index',
+                        page=page+1,
+                        search=search_query,
+                        sort=sort_option,
+                        min_rating=filter_rating) }}">
+        Next &raquo;
+    </a>
+    {% endif %}
+</div>
 
 </body>
 </html>

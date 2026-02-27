@@ -157,7 +157,7 @@ def edit_movie(id):
         if not rating.isdigit() or not (1 <= int(rating) <= 5):
             flash("Rating must be between 1 and 5.", "error")
             conn.close()
-            return redirect(url_for("edit_movie", id=id))
+            return redirect(url_for('edit_movie', id=movie.id))
 
         conn.execute(
             """
