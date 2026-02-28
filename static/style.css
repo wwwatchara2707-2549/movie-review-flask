@@ -303,3 +303,24 @@ button:hover {
 .btn-delete:hover {
     background-color: #cc0000;
 }
+.empty-box {
+    text-align: center;
+    padding: 40px;
+    margin-top: 30px;
+    background: #f4f6f8;
+    border-radius: 12px;
+}
+
+.btn-add {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 14px;
+    background: #007bff;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.btn-add:hover {
+    background: #0056b3;
+}
