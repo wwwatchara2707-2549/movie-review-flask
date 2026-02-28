@@ -364,3 +364,26 @@ a[href*="edit"] {
 a[href*="edit"]:hover {
     background-color: #117a8b;
 }
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.delete-form {
+    margin: 0;
+}
+
+.delete-btn {
+    padding: 5px 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.delete-btn:hover {
+    background-color: #a71d2a;
+}
