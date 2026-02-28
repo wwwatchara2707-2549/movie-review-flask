@@ -84,8 +84,16 @@
     Add Movie Review
 </a>
 
-{% if movies %}
-{% for movie in movies %}
+{% if movies|length == 0 %}
+    <div class="empty-box">
+        <h3>No Movies Found</h3>
+        <p>Try adjusting filters or add a new movie.</p>
+    </div>
+{% else %}
+    {% for movie in movies %}
+        <!-- โค้ดแสดงหนังอยู่ตรงนี้ -->
+    {% endfor %}
+{% endif %}
 <div class="movie-card">
 
     <h3>{{ movie.name }}</h3>
