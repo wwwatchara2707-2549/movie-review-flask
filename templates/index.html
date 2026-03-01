@@ -18,6 +18,10 @@
     <p>Track your favorite movies in style.</p>
 </div>
 
+<button onclick="toggleMode()" class="mode-toggle">
+    🌗 Toggle Mode
+</button>
+
 <!-- FLASH -->
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
@@ -171,6 +175,10 @@
     {% endif %}
 
 </div>
-
+<script>
+function toggleMode() {
+    document.body.classList.toggle("dark-mode");
+}
+</script>
 </body>
 </html>

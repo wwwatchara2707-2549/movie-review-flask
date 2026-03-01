@@ -433,3 +433,15 @@ body.dark-mode .footer {
     font-size: 28px;
     margin-bottom: 10px;
 }
+
+.mode-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 6px 12px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
