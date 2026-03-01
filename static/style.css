@@ -454,3 +454,47 @@ body.dark-mode .movie-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 0 15px rgba(255,255,255,0.1);
 }
+
+/* ===== FORCE DARK MODE TEXT FIX ===== */
+
+body.dark-mode {
+    background-color: #121212;
+    color: #e4e4e4;
+}
+
+/* ทำให้ข้อความรีวิวอ่านง่าย */
+body.dark-mode .movie-card p {
+    color: #cccccc;
+}
+
+/* ทำให้ชื่อหนังเด่น */
+body.dark-mode .movie-card h3 {
+    color: #ffffff;
+}
+
+/* ทำให้ input อ่านง่าย */
+body.dark-mode input,
+body.dark-mode select {
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border: 1px solid #555;
+}
+
+/* ปรับ stats box */
+body.dark-mode .stats-box {
+    background-color: #1e1e1e;
+    color: #dddddd;
+}
+
+/* ปรับ link */
+body.dark-mode a {
+    color: #4da6ff;
+}
+
+body.dark-mode a:hover {
+    color: #82cfff;
+}
+
+body.dark-mode .text-muted {
+    color: #aaaaaa !important;
+}
