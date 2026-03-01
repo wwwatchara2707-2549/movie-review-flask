@@ -118,38 +118,51 @@
     {% for movie in movies %}
         <div class="movie-card">
 
-            <h3>{{ movie.name }}</h3>
-
-            <p class="text-muted small">
-                Added: {{ movie.created_at[:16] }}
-            </p>
-
-            {% if movie.updated_at != movie.created_at %}
-            <p class="text-warning small fst-italic">
-                📝 Last updated: {{ movie.updated_at }}
-            </p>
+            {% if movie.poster %}
+                <img src="{{ movie.poster }}" 
+                     alt="Movie Poster" 
+                     class="poster-img">
+            {% else %}
+                <div class="no-poster">
+                    🎬 No Poster
+                </div>
             {% endif %}
 
-            <span class="rating-badge rating-{{ movie.rating }}">
-                ⭐ {{ movie.rating }}
-            </span>
+            <div class="movie-info">
 
-            <p>{{ movie.review }}</p>
+                <h3>{{ movie.name }}</h3>
 
-           <div class="action-buttons">
+                <p class="text-muted small">
+                    Added: {{ movie.created_at[:16] }}
+                </p>
 
-    <a href="{{ url_for('edit_movie', id=movie.id) }}" class="edit-btn">
-        ✏ Edit
-    </a>
+                {% if movie.updated_at != movie.created_at %}
+                <p class="text-warning small fst-italic">
+                    📝 Last updated: {{ movie.updated_at }}
+                </p>
+                {% endif %}
 
-    <button type="button" 
-            class="delete-btn"
-            onclick="openModal({{ movie.id }})">
-        🗑 Delete
-    </button>
+                <span class="rating-badge rating-{{ movie.rating }}">
+                    ⭐ {{ movie.rating }}
+                </span>
 
-</div>
+                <p class="movie-review">
+                    {{ movie.review }}
+                </p>
 
+                <div class="action-buttons">
+                    <a href="{{ url_for('edit_movie', id=movie.id) }}" class="edit-btn">
+                        ✏ Edit
+                    </a>
+
+                    <button type="button" 
+                            class="delete-btn"
+                            onclick="openModal({{ movie.id }})">
+                        🗑 Delete
+                    </button>
+                </div>
+
+            </div>
         </div>
     {% endfor %}
 {% else %}

@@ -7,40 +7,55 @@
 
 <body>
 
-    <h1>✏ Edit Movie Review</h1>
+<div class="form-wrapper">
+    <div class="form-card">
 
-    {% if error %}
-        <p style="color:red; font-weight:bold;">
-            {{ error }}
-        </p>
-    {% endif %}
+        <h2>🎬 Edit Movie Review</h2>
 
-    <form method="POST">
+        {% if error %}
+            <p class="error-text">
+                {{ error }}
+            </p>
+        {% endif %}
 
-        <input type="text" 
-               name="name" 
-               value="{{ movie.name }}" 
-               required>
-        <br><br>
+        <form method="POST">
 
-        <textarea name="review" required>{{ movie.review }}</textarea>
-        <br><br>
+            <input type="text" 
+                   name="name" 
+                   value="{{ movie.name }}" 
+                   placeholder="Movie Name"
+                   required>
 
-        <label>Rating:</label>
-        <select name="rating" required>
-            <option value="1" {% if movie.rating == "1" %}selected{% endif %}>⭐ 1</option>
-            <option value="2" {% if movie.rating == "2" %}selected{% endif %}>⭐⭐ 2</option>
-            <option value="3" {% if movie.rating == "3" %}selected{% endif %}>⭐⭐⭐ 3</option>
-            <option value="4" {% if movie.rating == "4" %}selected{% endif %}>⭐⭐⭐⭐ 4</option>
-            <option value="5" {% if movie.rating == "5" %}selected{% endif %}>⭐⭐⭐⭐⭐ 5</option>
-        </select>
-        <br><br>
+            <input type="text" 
+                   name="poster" 
+                   value="{{ movie.poster }}" 
+                   placeholder="Poster URL (https://example.com/poster.jpg)">
 
-        <button type="submit">Update</button>
-    </form>
+            <textarea name="review" 
+                      placeholder="Write your review..." 
+                      required>{{ movie.review }}</textarea>
 
-    <br>
-    <a href="/">⬅ Back</a>
+            <label>Rating</label>
+            <select name="rating" required>
+    <option value="">Select Rating</option>
+    {% for i in range(1,6) %}
+        <option value="{{ i }}" 
+            {% if movie.rating|string == i|string %}selected{% endif %}>
+            ⭐ {{ i }}
+        </option>
+    {% endfor %}
+</select>
+
+            <button type="submit" class="primary-btn">
+                💾 Update Review
+            </button>
+
+        </form>
+
+        <a href="/" class="back-link">← Back</a>
+
+    </div>
+</div>
 
 </body>
 </html>

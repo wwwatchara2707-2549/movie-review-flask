@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import session
+from datetime import datetime
 import sqlite3
 import os
 
@@ -19,23 +20,25 @@ def init_db():
     cursor = conn.cursor()
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS movies (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            review TEXT NOT NULL,
-            rating INTEGER NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-    
-    cursor.execute("""
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
-)
+    CREATE TABLE IF NOT EXISTS movies (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        review TEXT NOT NULL,
+        rating INTEGER NOT NULL,
+        poster TEXT,
+        created_at TEXT DEFAULT (datetime('now', '+7 hours')),
+        updated_at TEXT DEFAULT (datetime('now', '+7 hours')),
+        user TEXT
+    )
 """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+    )
+    """)
 
     conn.commit()
     conn.close()
@@ -150,11 +153,12 @@ def index():
 @app.route("/add", methods=["GET", "POST"])
 def add_movie():
     if request.method == "POST":
-        name = request.form.get("name", "").strip()
+        title = request.form.get("name", "").strip()
         review = request.form.get("review", "").strip()
         rating = request.form.get("rating", "")
+        poster = request.form.get("poster", "").strip()  
 
-        if not name or not review or not rating:
+        if not title or not review or not rating:
             flash("Please fill all fields.", "error")
             return redirect(url_for("add_movie"))
 
@@ -164,13 +168,15 @@ def add_movie():
 
         conn = get_db_connection()
         conn.execute(
-            "INSERT INTO movies (name, review, rating) VALUES (?, ?, ?)",
-            (name, review, int(rating))
+            """
+           INSERT INTO movies (name, review, rating, poster, user)
+VALUES (?, ?, ?, ?, ?)
+            """,
+            (title, review, int(rating), poster, session["user"])
         )
         conn.commit()
         conn.close()
 
-        
         return redirect(url_for("index"))
 
     return render_template("add.html")
@@ -181,39 +187,30 @@ def add_movie():
 # ----------------------------
 @app.route("/edit/<int:id>", methods=["GET", "POST"])
 def edit_movie(id):
-    conn = get_db_connection()
-    movie = conn.execute("SELECT * FROM movies WHERE id = ?", (id,)).fetchone()
-
-    if movie is None:
-        conn.close()
-        return redirect(url_for("index"))
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
 
     if request.method == "POST":
-        name = request.form.get("name", "").strip()
-        review = request.form.get("review", "").strip()
-        rating = request.form.get("rating", "")
+        name = request.form["name"]
+        review = request.form["review"]
+        rating = request.form["rating"]
+        poster = request.form["poster"]
 
-        if not rating.isdigit() or not (1 <= int(rating) <= 5):
-            flash("Rating must be between 1 and 5.", "error")
-            conn.close()
-            return redirect(url_for("edit_movie", id=id))
+        cursor.execute("""
+    UPDATE movies
+    SET name = ?, review = ?, rating = ?, poster = ?
+    WHERE id = ?
+""", (name, review, rating, poster, id))
 
-        conn.execute(
-            """
-            UPDATE movies
-            SET name = ?, review = ?, rating = ?,
-                updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-            """,
-            (name, review, int(rating), id)
-        )
         conn.commit()
         conn.close()
-
-        
         return redirect(url_for("index"))
 
+    
+    cursor.execute("SELECT * FROM movies WHERE id = ?", (id,))
+    movie = cursor.fetchone()
     conn.close()
+
     return render_template("edit.html", movie=movie)
 
 
@@ -288,7 +285,6 @@ def login():
     return render_template("login.html")
 print("DB path:", DATABASE)
 
-
 if __name__ == "__main__":
-    init_db()   
+    init_db()
     app.run(debug=True)
