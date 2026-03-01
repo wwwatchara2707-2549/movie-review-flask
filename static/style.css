@@ -351,19 +351,19 @@ button:hover {
     transform: translateY(-4px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.1);
 }
-a[href*="edit"] {
+.edit-btn {
     padding: 5px 10px;
     background-color: #17a2b8;
     color: white;
     border-radius: 5px;
     text-decoration: none;
-    margin-right: 5px;
     transition: background 0.2s ease;
 }
 
-a[href*="edit"]:hover {
+.edit-btn:hover {
     background-color: #117a8b;
 }
+
 .action-buttons {
     display: flex;
     gap: 10px;
