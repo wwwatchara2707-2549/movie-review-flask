@@ -498,3 +498,58 @@ body.dark-mode a:hover {
 body.dark-mode .text-muted {
     color: #aaaaaa !important;
 }
+
+/* ===== CINEMATIC HERO ===== */
+
+.hero-section {
+    position: relative;
+    height: 400px;
+    background: url("../static/background.jpg") center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* ทำ layer มืดทับภาพ */
+.hero-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+/* เนื้อหาด้านใน */
+.hero-overlay {
+    position: relative;
+    text-align: center;
+    color: white;
+    z-index: 2;
+}
+
+.hero-overlay h1 {
+    font-size: 42px;
+    font-weight: bold;
+}
+
+.hero-overlay p {
+    font-size: 18px;
+    margin-top: 10px;
+    color: #cccccc;
+}
+
+.hero-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #e50914;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.hero-btn:hover {
+    background: #b20710;
+}

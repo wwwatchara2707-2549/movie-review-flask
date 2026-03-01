@@ -13,9 +13,14 @@
 <body class="dark-mode">
 
 <h1>🎬 Movie Reviews</h1>
-<div class="hero-section text-center">
-    <h2>🎬 Discover. Review. Rate.</h2>
-    <p>Track your favorite movies in style.</p>
+<div class="hero-section">
+    <div class="hero-overlay">
+        <h1>🎬 Discover. Review. Rate.</h1>
+        <p>Track your favorite movies in style.</p>
+        <a href="{{ url_for('add_movie') }}" class="hero-btn">
+            + Add Your Review
+        </a>
+    </div>
 </div>
 
 
