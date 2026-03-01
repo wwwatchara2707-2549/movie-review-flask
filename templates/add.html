@@ -7,31 +7,35 @@
 
 <body>
 
-    <h1>➕ Add Movie Review</h1>
+<div class="add-page">
+    <div class="add-card">
 
-    <form method="POST">
-        <input type="text" name="name" placeholder="Movie Name" required>
-        <br><br>
+        <h2>🎬 Add Movie Review</h2>
 
-        <textarea name="review" placeholder="Write your review..." required></textarea>
-        <br><br>
+        <form method="POST">
 
-        <label>Rating:</label>
-        <select name="rating" required>
-            <option value="">Select Rating</option>
-            <option value="1">⭐ 1</option>
-            <option value="2">⭐⭐ 2</option>
-            <option value="3">⭐⭐⭐ 3</option>
-            <option value="4">⭐⭐⭐⭐ 4</option>
-            <option value="5">⭐⭐⭐⭐⭐ 5</option>
-        </select>
-        <br><br>
+            <input type="text" name="name" placeholder="Movie Name" required>
 
-        <button type="submit">Save</button>
-    </form>
+            <textarea name="review" placeholder="Write your review..." required></textarea>
 
-    <br>
-    <a href="/">⬅ Back</a>
+            <label>Rating</label>
+            <select name="rating" required>
+                <option value="">Select Rating</option>
+                <option value="1">⭐ 1</option>
+                <option value="2">⭐⭐ 2</option>
+                <option value="3">⭐⭐⭐ 3</option>
+                <option value="4">⭐⭐⭐⭐ 4</option>
+                <option value="5">⭐⭐⭐⭐⭐ 5</option>
+            </select>
+
+            <button type="submit">💾 Save Review</button>
+
+        </form>
+
+        <a href="/" class="back-btn">⬅ Back</a>
+
+    </div>
+</div>
 
 </body>
 </html>

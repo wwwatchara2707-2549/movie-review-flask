@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask import session
 import sqlite3
 import os
 
@@ -26,6 +28,14 @@ def init_db():
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
+    
+    cursor.execute("""
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL
+)
+""")
 
     conn.commit()
     conn.close()
@@ -160,7 +170,7 @@ def add_movie():
         conn.commit()
         conn.close()
 
-        flash("Movie added successfully!", "success")
+        
         return redirect(url_for("index"))
 
     return render_template("add.html")
@@ -200,7 +210,7 @@ def edit_movie(id):
         conn.commit()
         conn.close()
 
-        flash("Movie updated successfully!", "success")
+        
         return redirect(url_for("index"))
 
     conn.close()
@@ -216,7 +226,7 @@ def delete_movie(id):
     conn.execute("DELETE FROM movies WHERE id = ?", (id,))
     conn.commit()
     conn.close()
-    flash("Movie deleted successfully!", "info")
+    
     return redirect(url_for("index"))
 
 
@@ -232,6 +242,53 @@ def about():
 def contact():
     return render_template("contact.html")
 
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = generate_password_hash(request.form["password"])
+
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", 
+                           (username, password))
+            conn.commit()
+            
+            return redirect("/login")
+        except:
+            flash("Username already exists.")
+        finally:
+            conn.close()
+
+    return render_template("register.html")
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+        user = cursor.fetchone()
+        conn.close()
+
+        if user and check_password_hash(user[2], password):
+            session["user"] = user[1]
+
+            
+            return redirect(url_for("index"))   # 👈 กลับหน้า Home ทันที
+
+        else:
+            flash("Invalid username or password", "danger")
+
+    return render_template("login.html")
+print("DB path:", DATABASE)
+
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    init_db()   
+    app.run(debug=True)
