@@ -445,3 +445,12 @@ body.dark-mode .footer {
     border-radius: 6px;
     cursor: pointer;
 }
+
+.movie-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.dark-mode .movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px rgba(255,255,255,0.1);
+}
